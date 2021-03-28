@@ -1,7 +1,5 @@
 package aviles.angel.mydigimind
 
-import java.io.Serializable
-
-data class Recordatorio(var dias: String,
+data class Recordatorio(var dias: ArrayList<String>,
                         var tiempo: String,
-                        var nombre: String) : Serializable
+                        var nombre: String)

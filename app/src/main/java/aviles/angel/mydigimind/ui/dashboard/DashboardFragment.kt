@@ -14,7 +14,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import aviles.angel.mydigimind.R
 import aviles.angel.mydigimind.Recordatorio
-import aviles.angel.mydigimind.ui.home.HomeFragment.Companion.carrito
+import aviles.angel.mydigimind.ui.home.HomeFragment
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 class DashboardFragment : Fragment() {
@@ -29,22 +31,21 @@ class DashboardFragment : Fragment() {
         dashboardViewModel =
                 ViewModelProvider(this).get(DashboardViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_dashboard, container, false)
-        //val textView: TextView = root.findViewById(R.id.text_dashboard)
-        dashboardViewModel.text.observe(viewLifecycleOwner, Observer {
-            //    textView.text = it
-        })
 
         val btnSetTime: Button = root.findViewById(R.id.btnRegister)
         val txtMensaje: TextView = root.findViewById(R.id.mensaje)
         val btnHora: Button = root.findViewById(R.id.btnTime)
-        val txtTiempo: TextView = root.findViewById(R.id.txtTiempo)
 
         btnHora.setOnClickListener { v ->
+            val cal = Calendar.getInstance()
+            val timeSetListener = TimePickerDialog.OnTimeSetListener { timePicker, hourOfDay, minutes ->
+                cal.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                cal.set(Calendar.MINUTE, minutes)
 
-            val timePickerDialog = TimePickerDialog(context, { timePicker, hourOfDay, minutes ->
-                txtTiempo.setText(hourOfDay.toString().padStart(2, '0') + ":" + minutes.toString().padStart(2, '0'))
-            }, 0, 0, false)
-            timePickerDialog.show()
+                btnHora.text = SimpleDateFormat("HH:mm").format(cal.time)
+            }
+
+            TimePickerDialog(context, timeSetListener, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), false).show()
         }
 
         val chbMonday: CheckBox = root.findViewById(R.id.chbMonday)
@@ -56,48 +57,48 @@ class DashboardFragment : Fragment() {
         val chbSunday: CheckBox = root.findViewById(R.id.chbSunday)
 
         btnSetTime.setOnClickListener {
-            if (!txtMensaje.text.isNullOrEmpty() && !txtTiempo.text.isNullOrEmpty() && (chbMonday.isChecked || chbTuesday.isChecked || chbWednesday.isChecked || chbThursday.isChecked || chbFriday.isChecked || chbSaturday.isChecked || chbSunday.isChecked)) {
+            if (!txtMensaje.text.isNullOrEmpty() && !btnHora.text.isNullOrEmpty() && (chbMonday.isChecked || chbTuesday.isChecked || chbWednesday.isChecked || chbThursday.isChecked || chbFriday.isChecked || chbSaturday.isChecked || chbSunday.isChecked)) {
 
-                var dias = ""
+                var dias = ArrayList<String>()
 
                 if (chbMonday.isChecked && chbTuesday.isChecked && chbWednesday.isChecked && chbThursday.isChecked && chbFriday.isChecked && chbSaturday.isChecked && chbSunday.isChecked) {
-                    dias = "Everyday"
+                    dias.add("Everyday")
                 } else {
                     if (chbMonday.isChecked) {
-                        dias += if (dias.isNullOrEmpty()) "Monday" else ", Monday"
+                        dias.add(if (dias.isNullOrEmpty()) "Monday" else ", Monday")
                     }
 
                     if (chbTuesday.isChecked) {
-                        dias += if (dias.isNullOrEmpty()) "Tuesday" else ", Tuesday"
+                        dias.add(if (dias.isNullOrEmpty()) "Tuesday" else ", Tuesday")
                     }
 
                     if (chbWednesday.isChecked) {
-                        dias += if (dias.isNullOrEmpty()) "Wednesday" else ", Wednesday"
+                        dias.add(if (dias.isNullOrEmpty()) "Wednesday" else ", Wednesday")
                     }
 
                     if (chbThursday.isChecked) {
-                        dias += if (dias.isNullOrEmpty()) "Thursday" else ", Thursday"
+                        dias.add(if (dias.isNullOrEmpty()) "Thursday" else ", Thursday")
                     }
 
                     if (chbFriday.isChecked) {
-                        dias += if (dias.isNullOrEmpty()) "Friday" else ", Friday"
+                        dias.add(if (dias.isNullOrEmpty()) "Friday" else ", Friday")
                     }
 
                     if (chbSaturday.isChecked) {
-                        dias += if (dias.isNullOrEmpty()) "Saturday" else ", Saturday"
+                        dias.add(if (dias.isNullOrEmpty()) "Saturday" else ", Saturday")
                     }
 
                     if (chbSunday.isChecked) {
-                        dias += if (dias.isNullOrEmpty()) "Sunday" else ", Sunday"
+                        dias.add(if (dias.isNullOrEmpty()) "Sunday" else ", Sunday")
                     }
                 }
 
-                val recordatorio: Recordatorio = Recordatorio(dias, txtTiempo.text.toString(), txtMensaje.text.toString())
+                val recordatorio: Recordatorio = Recordatorio(dias, btnHora.text.toString(), txtMensaje.text.toString())
 
-                carrito.agregar(recordatorio)
+                HomeFragment.tasks.add(recordatorio)
 
                 txtMensaje.setText("")
-                txtTiempo.setText("")
+                btnHora.setText("")
 
                 chbMonday.setChecked(false)
                 chbTuesday.setChecked(false)
