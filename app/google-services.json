@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "757526651090",
+    "project_id": "mydigimind-5ff03",
+    "storage_bucket": "mydigimind-5ff03.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:757526651090:android:8aa25757cfc2e6fa278d0b",
+        "android_client_info": {
+          "package_name": "aviles.angel.mydigimind"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "757526651090-vgnprhlf0oa71sklfa3t2rtef82tjro0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABjM3yentPwNLrLZ21xYjj11x_m0OUE_8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "757526651090-vgnprhlf0oa71sklfa3t2rtef82tjro0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
