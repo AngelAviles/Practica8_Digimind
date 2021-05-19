@@ -10,17 +10,20 @@ import android.widget.CheckBox
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import aviles.angel.mydigimind.R
 import aviles.angel.mydigimind.Recordatorio
 import aviles.angel.mydigimind.ui.home.HomeFragment
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.*
 
 
 class DashboardFragment : Fragment() {
 
+    private lateinit var storage: FirebaseFirestore
+    private lateinit var usuario: FirebaseAuth
     private lateinit var dashboardViewModel: DashboardViewModel
 
     override fun onCreateView(
@@ -32,7 +35,11 @@ class DashboardFragment : Fragment() {
                 ViewModelProvider(this).get(DashboardViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_dashboard, container, false)
 
-        val btnSetTime: Button = root.findViewById(R.id.btnRegister)
+        //instanciar firebase
+        storage = FirebaseFirestore.getInstance()
+        usuario = FirebaseAuth.getInstance()
+
+        val btnSave: Button = root.findViewById(R.id.btnRegister)
         val txtMensaje: TextView = root.findViewById(R.id.mensaje)
         val btnHora: Button = root.findViewById(R.id.btnTime)
 
@@ -56,10 +63,35 @@ class DashboardFragment : Fragment() {
         val chbSaturday: CheckBox = root.findViewById(R.id.chbSaturday)
         val chbSunday: CheckBox = root.findViewById(R.id.chbSunday)
 
-        btnSetTime.setOnClickListener {
+        btnSave.setOnClickListener {
             if (!txtMensaje.text.isNullOrEmpty() && !btnHora.text.isNullOrEmpty() && (chbMonday.isChecked || chbTuesday.isChecked || chbWednesday.isChecked || chbThursday.isChecked || chbFriday.isChecked || chbSaturday.isChecked || chbSunday.isChecked)) {
 
+                var titulo = txtMensaje.text.toString()
+                var time = btnHora.text.toString()
+
                 var dias = ArrayList<String>()
+
+                val actividad = hashMapOf(
+                    "actividad" to titulo,
+                    "email" to usuario.currentUser.email.toString(),
+                    "do" to chbSunday.isChecked,
+                    "lu" to chbMonday.isChecked,
+                    "ma" to chbTuesday.isChecked,
+                    "mi" to chbWednesday.isChecked,
+                    "ju" to chbThursday.isChecked,
+                    "vi" to chbFriday.isChecked,
+                    "sa" to chbSaturday.isChecked,
+                    "tiempo" to time
+                )
+
+                storage.collection("actividades")
+                    .add(actividad)
+                    .addOnSuccessListener {
+                        Toast.makeText(root.context, "Task agregada", Toast.LENGTH_SHORT).show()
+                    }
+                    .addOnFailureListener {
+                        Toast.makeText(root.context, "Error: intente de nuevo", Toast.LENGTH_SHORT).show()
+                    }
 
                 if (chbMonday.isChecked && chbTuesday.isChecked && chbWednesday.isChecked && chbThursday.isChecked && chbFriday.isChecked && chbSaturday.isChecked && chbSunday.isChecked) {
                     dias.add("Everyday")
